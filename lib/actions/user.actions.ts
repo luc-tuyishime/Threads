@@ -1,6 +1,7 @@
 'use server'
 import { FilterQuery } from 'mongoose'
 import { revalidatePath } from 'next/cache'
+import Community from '../models/community.model'
 import Thread from '../models/thread.model'
 import User from '../models/user.model'
 import { connectToDB } from '../mongoose'
@@ -12,6 +13,18 @@ interface Params {
 	bio: string
 	image: string
 	path: string
+}
+
+export async function fetchUser(userId: string) {
+	try {
+		connectToDB()
+		return await User.findOne({ id: userId }).populate({
+			path: 'communities',
+			model: Community,
+		})
+	} catch (error: any) {
+		throw new Error('Failed to fetch message', error?.message)
+	}
 }
 
 export async function updateUser({
@@ -42,20 +55,7 @@ export async function updateUser({
 			revalidatePath(path) //
 		}
 	} catch (error: any) {
-		throw new Error(`Failed to create/update user: ${error.message}`)
-	}
-}
-
-export async function fetchUser(userId: string) {
-	try {
-		connectToDB()
-		return await User.findOne({ id: userId })
-		// .populate({
-		// 	path: 'communities',
-		// 	model: Community
-		// });
-	} catch (error: any) {
-		throw new Error('Failed to fetch message', error.message)
+		throw new Error(`Failed to create/update user: ${error?.message}`)
 	}
 }
 

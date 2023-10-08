@@ -11,7 +11,7 @@ const communitySchema = new mongoose.Schema({
 		{
 			// one user can have multiple references to specific threads store in the DB
 			type: mongoose.Schema.Types.ObjectId,
-			ref: 'Threads',
+			ref: 'Thread',
 		},
 	],
 	members: [
