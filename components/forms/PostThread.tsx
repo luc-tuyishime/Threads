@@ -18,6 +18,7 @@ import { ChangeEvent, useState } from 'react'
 
 import { ThreadValidation } from '@/lib/validations/thread'
 import { updateUser } from '@/lib/actions/user.actions'
+import { createThread } from '@/lib/actions/thread.actions'
 
 interface Props {
 	user: {
@@ -43,14 +44,23 @@ function PostThread({ userId }: { userId: string }) {
 		},
 	})
 
-	const onSubmit = () => {}
+	const onSubmit = async (values: z.infer<typeof ThreadValidation>) => {
+		await createThread({
+			text: values.thread,
+			author: userId,
+			communityId: null,
+			path: pathname,
+		})
+
+		router.push('/')
+	}
 	return (
 		<>
 			<h1>Post Thread Form</h1>
 			<Form {...form}>
 				<form
 					onSubmit={form.handleSubmit(onSubmit)}
-					className="flex flex-col justify-start gap-10">
+					className="mt-10 flex flex-col justify-start gap-10">
 					<FormField
 						control={form.control}
 						name="thread"
@@ -66,6 +76,9 @@ function PostThread({ userId }: { userId: string }) {
 							</FormItem>
 						)}
 					/>
+					<Button type="submit" className="bg-primary-500">
+						Post Thread
+					</Button>
 				</form>
 			</Form>
 		</>
